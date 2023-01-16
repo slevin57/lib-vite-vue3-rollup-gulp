@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    // zidingyi
+    "noImplicitAny": false,  // import引入相对路径的js文件报错
+    "baseUrl": "./",
+    "types": [
+        "node",
+        "vite/client"
+    ],
+  },
+  "include": [
+    "./*.d.ts",
+    "packages/**/*",
+    "src/**/*.ts", 
+    "src/**/*.d.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.vue", 
+    "src/vue-shim.d.ts",
+    "rollup.config.ts"
+],
+"files": [
+    "./vue-shim.d.ts",
+],
+"references": [{ "path": "./tsconfig.node.json" }],
+
+}
