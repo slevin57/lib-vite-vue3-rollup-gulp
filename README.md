@@ -1,7 +1,7 @@
-> 环境
-> node V18.13.0
-> pnpm V7.14.1
-> yarn 1.22.18
+> 环境\
+> node V18.13.0\
+> pnpm V7.14.1\
+> yarn 1.22.18\
 
 # rollup通过配置文件和api两种方式打包vue3组件的mvp
 
@@ -10,14 +10,6 @@
 执行`build-lib:vite`，通过vite的模式打包；
 执行`build-lib:file`，通过rollup的配置文件打包；
 执行`build-lib:api`，通过rollup的js api打包；
-
-
-加入gulp：
-npm i -g ts-node gulp-cli
-yanr add gulp ts-node -D
-
-执行ts类型的配置文件所需依赖：
-yarn add gulp typescript gulp-typescript @types/gulp sucrase
 
 
 注意rollup版本v2和v3的区别，例如json文件的引入，esm模块化规范解析的区别，具体可参考[rollup官方文档](https://rollupjs.org/guide/en/#prerequisites)。

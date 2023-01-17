@@ -1,4 +1,3 @@
-
 import { spawn } from "child_process";
 import path from "path";
 import { series, parallel } from "gulp";
@@ -21,21 +20,22 @@ export const run = async (command: string, dirname?: string) => {
     });
 };
 
-async function  build (){
-    run('yarn build-lib:all')
+async function build() {
+    run("yarn build-lib:all");
 }
 
-
+const clean = parallel(
+    withTaskName("clean1", async () => run("rm -rf __lib-vite")),
+    withTaskName("clean2", async () => run("rm -rf __lib-file")),
+    withTaskName("clean3", async () => run("rm -rf __lib-api"))
+);
+const buildall = parallel(
+    withTaskName("build1", async () => run("yarn build-lib:vite")),
+    withTaskName("build2", async () => run("yarn build-lib:file")),
+    withTaskName("build3", async () => run("yarn build-lib:api"))
+);
 export default series(
-    parallel(
-        withTaskName("clean1", async () => run("rm -rf __lib-vite")),
-        withTaskName("clean2", async () => run("rm -rf __lib-file")),
-        withTaskName("clean3", async () => run("rm -rf __lib-api"))
-    ),
+    clean,
     // build,
-    parallel(
-        withTaskName("build1", async () => run("yarn build-lib:vite")),
-        withTaskName("build2", async () => run("yarn build-lib:file")),
-        withTaskName("build3", async () => run("yarn build-lib:api"))
-    )
+    buildall
 );
