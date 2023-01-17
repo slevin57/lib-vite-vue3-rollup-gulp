@@ -1,7 +1,7 @@
 > 环境\
 > node V18.13.0\
 > pnpm V7.14.1\
-> yarn 1.22.18\
+> yarn 1.22.18
 
 # rollup通过配置文件和api两种方式打包vue3组件的mvp
 
