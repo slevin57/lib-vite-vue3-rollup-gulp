@@ -7,8 +7,8 @@
 
 `packages`目录：专门存放组件，通过一个`index.ts`文件总导出。
 
-执行`build-lib:vite`，通过vite的模式打包；
-执行`build-lib:file`，通过rollup的配置文件打包；
+执行`build-lib:vite`，通过vite的模式打包；\
+执行`build-lib:file`，通过rollup的配置文件打包；\
 执行`build-lib:api`，通过rollup的js api打包；
 
 
