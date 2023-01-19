@@ -39,7 +39,7 @@ choices.push(new inquirer.Separator('---end---'));
 
 async function changeVersion() {
     let version = ''
-    const answers = await inquirer.prompt([
+    const questions = [
         {
             type: "list",
             name: "autoVersion",
@@ -56,10 +56,10 @@ async function changeVersion() {
                 return hash.autoVersion === undefined;
             },
             validate(answer, hash) {
-                const isVersionLeaal =
+                const isVersionlegal =
                     semver.valid(answer) && semver.gt(answer, currentV);
                 const errMsg = "版本号格式错误，重新输入";
-                return isVersionLeaal || errMsg;
+                return isVersionlegal || errMsg;
             },
         },
         {
@@ -70,19 +70,18 @@ async function changeVersion() {
                 return `确认要升级的版本号：${version}，需要重新生成的话输入"n/N"`;
             },
         },
-    ]);
+    ];
+
+    const answers = await inquirer.prompt(questions);
 
     if (!answers.confirm) {
-        console.log(`answers1:`,answers);
-        console.log(`version:`,version);
-        await changeVersion();
+        console.log(`否认=====:`, answers, version);
+        version = await changeVersion();
     }
-    console.log(`answers2:`,answers);
-    console.log(`version:`, version);
+    console.log(`确认=====:`, answers, version);
     return version;
-    console.log(`11:`,11);
 }
-console.log(`22:`,22);
+
 targetV = await changeVersion()
-console.log(`3333:`,3333);
-console.log(`targetV:`,targetV);
+console.log(`3333====:`,3333);
+console.log(`targetV====:`,targetV);
