@@ -37,7 +37,7 @@ choices.push({
 })
 choices.push(new inquirer.Separator('---end---'));
 
-async function changeVersion() {
+async function doAsk() {
     let version = ''
     const questions = [
         {
@@ -76,12 +76,14 @@ async function changeVersion() {
 
     if (!answers.confirm) {
         console.log(`否认=====:`, answers, version);
-        version = await changeVersion();
+        version = await doAsk();
     }
     console.log(`确认=====:`, answers, version);
     return version;
 }
 
-targetV = await changeVersion()
+targetV = await doAsk()
 console.log(`3333====:`,3333);
 console.log(`targetV====:`,targetV);
+
+// 写入pkg.json
