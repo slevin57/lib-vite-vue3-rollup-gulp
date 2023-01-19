@@ -72,13 +72,17 @@ async function changeVersion() {
         },
     ]);
 
-    console.log(`answers:`, answers);
-    if (answers.confirm) {
-        return version;
-    } else {
-        changeVersion();
+    if (!answers.confirm) {
+        console.log(`answers1:`,answers);
+        console.log(`version:`,version);
+        await changeVersion();
     }
+    console.log(`answers2:`,answers);
+    console.log(`version:`, version);
+    return version;
+    console.log(`11:`,11);
 }
-
+console.log(`22:`,22);
 targetV = await changeVersion()
+console.log(`3333:`,3333);
 console.log(`targetV:`,targetV);
