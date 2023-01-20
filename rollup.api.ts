@@ -18,7 +18,7 @@ import { inputOptions, outputOptionsList } from "./rollup.config";
 let bundle;
 let buildFailed = false;
 try {
-    bundle = await rollup(inputOptions)
+    bundle = await rollup(inputOptions as InputOptions);
     // console.log(`bundle:`,bundle);
     for (const outputOptions of outputOptionsList) {
 

@@ -52,4 +52,3 @@ export default defineConfig(({ mode }) => {
     return userConfig
 });
 
-// build的两种格式
