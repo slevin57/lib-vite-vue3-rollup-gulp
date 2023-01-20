@@ -1,14 +1,23 @@
 import semver from "semver";
 import inquirer from "inquirer";
-import pkg from "./package.json" assert { type: "json" };
+import { resolve, dirname } from 'path'
+import { createRequire } from "module";
+import { writeFileSync } from 'node:fs'
+// import pkgJson from "./package.json" assert { type: "json" };
 
 /**
  * 通过参数直接自定义
  * 手动选择
  * 没有选项，自定义输入
+ * 提示文案高亮
+ * prerelease版本更新支持
+ * 路径找不到退出/提示及可选支持
  */
 
-const currentV = pkg.version || '1.2.3'
+const require = createRequire(import.meta.url)
+const pkgPath = resolve(process.cwd(), './package.json')
+const pkgJson = require(pkgPath)
+const currentV = pkgJson.version || '1.2.3'
 let targetV = ''
 const releaseTypes = [
     'patch',
@@ -44,7 +53,7 @@ async function doAsk() {
             type: "list",
             name: "autoVersion",
             loop: true,
-            message: `当前版本是${currentV},选择要升级的版本号：`,
+            message: `请选择版本号(当前为${currentV})`,
             choices,
             // filter: (v) => rawcChoices.find((i) => i.string === v).preview,
         },
@@ -58,7 +67,7 @@ async function doAsk() {
             validate(answer, hash) {
                 const isVersionlegal =
                     semver.valid(answer) && semver.gt(answer, currentV);
-                const errMsg = "版本号格式错误，重新输入";
+                const errMsg = "版本号格式有误或低于当前版本，请重新输入";
                 return isVersionlegal || errMsg;
             },
         },
@@ -67,7 +76,7 @@ async function doAsk() {
             name: "confirm",
             message(hash) {
                 version = hash.autoVersion || hash.manualVersion;
-                return `确认要升级的版本号：${version}，需要重新生成的话输入"n/N"`;
+                return `确认要升级的版本号：${version}(需要重新选择的话输入"n/N")`;
             },
         },
     ];
@@ -82,8 +91,17 @@ async function doAsk() {
     return version;
 }
 
-targetV = await doAsk()
-console.log(`3333====:`,3333);
+// targetV = await doAsk()
 console.log(`targetV====:`,targetV);
 
+
 // 写入pkg.json
+async function doAskWrite(){
+    pkgJson.version = await doAsk();
+    writeFileSync(pkgPath, JSON.stringify(pkgJson, null, "\t"));
+}
+
+export {
+    doAsk,
+    doAskWrite
+}
