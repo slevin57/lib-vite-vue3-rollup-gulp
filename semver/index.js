@@ -1,53 +1,30 @@
-import semver from "semver";
-import inquirer from "inquirer";
-import { resolve, dirname } from 'path'
-import { createRequire } from "module";
-import { writeFileSync } from 'node:fs'
-// import pkgJson from "./package.json" assert { type: "json" };
-
 /**
- * 通过参数直接自定义
- * 手动选择
- * 没有选项，自定义输入
- * 提示文案高亮
- * prerelease版本更新支持
- * 路径找不到退出/提示及可选支持
+ * RoadMap
+ * [ ] 命令行执行
+ * [ ] 通过参数直接自定义
+ * [x] 手动选择
+ * [x] 支持自定义输入
+ * [ ] 提示文案高亮
+ * [x] prerelease版本更新支持
+ * [x] 路径找不到退出/提示及自定义支持
  */
 
-const require = createRequire(import.meta.url)
-const pkgPath = resolve(process.cwd(), './package.json')
-const pkgJson = require(pkgPath)
-const currentV = pkgJson.version || '1.2.3'
-let targetV = ''
-const releaseTypes = [
-    'patch',
-    'minor',
-    'major',
-    'prepatch',
-    'preminor',
-    'premajor',
-    // 'prerelease',
-]
+import semver from "semver";
+import inquirer from "inquirer";
+import { resolve, dirname } from "path";
+import { createRequire } from "module";
+import { writeFileSync } from "node:fs";
+// import pkgJson from "./package.json" assert { type: "json" };
+const require = createRequire(import.meta.url);
 
-// const rawcChoices = releaseTypes.map((t) => ({
-//     preview: semver.inc(currentV, t),
-//     string: `${t} (${semver.inc(currentV, t)})`,
-// }));
-// const choices = rawcChoices.map((i) => i.string)
+let pkgPath = "",
+    pkgJson = "",
+    currentV = "",
+    choices = [];
 
-const choices = releaseTypes.map((t) => ({
-    name: `${t} (${semver.inc(currentV, t)})`,
-    value: semver.inc(currentV, t),
-    short: semver.inc(currentV, t),
-}))
-choices.push({
-    name: "手动输入",
-    value: undefined,
-})
-choices.push(new inquirer.Separator('---end---'));
-
+// 询问
 async function doAsk() {
-    let version = ''
+    let version = "";
     const questions = [
         {
             type: "list",
@@ -91,17 +68,60 @@ async function doAsk() {
     return version;
 }
 
-// targetV = await doAsk()
-console.log(`targetV====:`,targetV);
-
-
-// 写入pkg.json
-async function doAskWrite(){
-    pkgJson.version = await doAsk();
+// 更新pkg.json的version
+async function doWrite(version) {
+    pkgJson.version = version;
     writeFileSync(pkgPath, JSON.stringify(pkgJson, null, "\t"));
 }
 
-export {
-    doAsk,
-    doAskWrite
+const isObject = (val) => val !== null && typeof val === "object";
+
+/**
+ * options 可选参数
+ * @param { Boolean } options.write 是否更新package.json文件中的版本号，默认false，只返回更新后的版本号；
+ * @param { String } options.pathname 指定package.json文件路径，默认寻找命令执行路径下的package.json
+ * @returns
+ */
+async function increaseVersion(options = {}) {
+    pkgPath =
+        (isObject(options) && options.pathname) ||
+        resolve(process.cwd(), "./pkg2.json");
+    pkgJson = require(pkgPath);
+    currentV = pkgJson.version || "1.2.3";
+
+    const releaseTypes = [
+        "patch",
+        "minor",
+        "major",
+        "prepatch",
+        "preminor",
+        "premajor",
+        // 'prerelease',
+    ];
+
+    // const rawcChoices = releaseTypes.map((t) => ({
+    //     preview: semver.inc(currentV, t),
+    //     string: `${t} (${semver.inc(currentV, t)})`,
+    // }));
+    // const choices = rawcChoices.map((i) => i.string)
+
+    choices = releaseTypes.map((t) => ({
+        name: `${t} (${semver.inc(currentV, t)})`,
+        value: semver.inc(currentV, t),
+        short: semver.inc(currentV, t),
+    }));
+
+    choices.push({
+        name: "手动输入",
+        value: undefined,
+    });
+    choices.push(new inquirer.Separator("---end---"));
+
+    const v = await doAsk();
+
+    if (isObject(options) && options.write) doWrite(v);
+
+    return v;
 }
+
+export { increaseVersion };
