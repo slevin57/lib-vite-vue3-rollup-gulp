@@ -19,12 +19,40 @@ const require = createRequire(import.meta.url);
 
 let pkgPath = "",
     pkgJson = "",
-    currentV = "",
-    choices = [];
+    currentV = ""
 
 // 询问
 async function doAsk() {
-    let version = "";
+    let targetVersion = "";
+
+    const releaseTypes = [
+        "prerelease",
+        "prepatch",
+        "preminor",
+        "premajor",
+        "patch",
+        "minor",
+        "major",
+    ];
+
+    // const rawcChoices = releaseTypes.map((t) => ({
+    //     preview: semver.inc(currentV, t),
+    //     string: `${t} (${semver.inc(currentV, t)})`,
+    // }));
+    // const choices = rawcChoices.map((i) => i.string)
+
+    const choices = releaseTypes.map((t) => ({
+        name: `${t} (${semver.inc(currentV, t)})`,
+        value: semver.inc(currentV, t),
+        short: semver.inc(currentV, t),
+    }));
+
+    choices.push({
+        name: "手动输入",
+        value: undefined,
+    });
+    choices.push(new inquirer.Separator("---end---"));
+
     const questions = [
         {
             type: "list",
@@ -52,8 +80,8 @@ async function doAsk() {
             type: "confirm",
             name: "confirm",
             message(hash) {
-                version = hash.autoVersion || hash.manualVersion;
-                return `确认要升级的版本号：${version}(需要重新选择的话输入"n/N")`;
+                targetVersion = hash.autoVersion || hash.manualVersion;
+                return `确认要升级的版本号：${targetVersion}(需要重新选择的话输入"n/N")`;
             },
         },
     ];
@@ -61,11 +89,11 @@ async function doAsk() {
     const answers = await inquirer.prompt(questions);
 
     if (!answers.confirm) {
-        console.log(`否认=====:`, answers, version);
-        version = await doAsk();
+        console.log(`否认=====:`, answers, targetVersion);
+        targetVersion = await doAsk();
     }
-    console.log(`确认=====:`, answers, version);
-    return version;
+    console.log(`确认=====:`, answers, targetVersion);
+    return targetVersion;
 }
 
 // 更新pkg.json的version
@@ -85,37 +113,9 @@ const isObject = (val) => val !== null && typeof val === "object";
 async function increaseVersion(options = {}) {
     pkgPath =
         (isObject(options) && options.pathname) ||
-        resolve(process.cwd(), "./pkg2.json");
+        resolve(process.cwd(), "./pkg.json");
     pkgJson = require(pkgPath);
     currentV = pkgJson.version || "1.2.3";
-
-    const releaseTypes = [
-        "patch",
-        "minor",
-        "major",
-        "prepatch",
-        "preminor",
-        "premajor",
-        // 'prerelease',
-    ];
-
-    // const rawcChoices = releaseTypes.map((t) => ({
-    //     preview: semver.inc(currentV, t),
-    //     string: `${t} (${semver.inc(currentV, t)})`,
-    // }));
-    // const choices = rawcChoices.map((i) => i.string)
-
-    choices = releaseTypes.map((t) => ({
-        name: `${t} (${semver.inc(currentV, t)})`,
-        value: semver.inc(currentV, t),
-        short: semver.inc(currentV, t),
-    }));
-
-    choices.push({
-        name: "手动输入",
-        value: undefined,
-    });
-    choices.push(new inquirer.Separator("---end---"));
 
     const v = await doAsk();
 
