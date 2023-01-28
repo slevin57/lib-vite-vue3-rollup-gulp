@@ -19,11 +19,12 @@ const require = createRequire(import.meta.url);
 
 let pkgPath = "",
     pkgJson = "",
-    currentV = ""
+    currentV = "",
+    targetV = ""
 
 // 询问
 async function doAsk() {
-    let targetVersion = "";
+    let _version = "";
 
     const releaseTypes = [
         "prerelease",
@@ -80,8 +81,8 @@ async function doAsk() {
             type: "confirm",
             name: "confirm",
             message(hash) {
-                targetVersion = hash.autoVersion || hash.manualVersion;
-                return `确认要升级的版本号：${targetVersion}(需要重新选择的话输入"n/N")`;
+                _version = hash.autoVersion || hash.manualVersion;
+                return `确认要升级的版本号：${_version}(需要重新选择的话输入"n/N")`;
             },
         },
     ];
@@ -89,16 +90,16 @@ async function doAsk() {
     const answers = await inquirer.prompt(questions);
 
     if (!answers.confirm) {
-        console.log(`否认=====:`, answers, targetVersion);
-        targetVersion = await doAsk();
+        console.log(`否认=====:`, answers, _version);
+        _version = await doAsk();
     }
-    console.log(`确认=====:`, answers, targetVersion);
-    return targetVersion;
+    console.log(`确认=====:`, answers, _version);
+    return _version;
 }
 
 // 更新pkg.json的version
-async function doWrite(version) {
-    pkgJson.version = version;
+async function doWrite() {
+    pkgJson.version = targetV;
     writeFileSync(pkgPath, JSON.stringify(pkgJson, null, "\t"));
 }
 
@@ -111,17 +112,18 @@ const isObject = (val) => val !== null && typeof val === "object";
  * @returns { String } version 升级后的版本号
  */
 async function increaseVersion(options = {}) {
+
     pkgPath =
         (isObject(options) && options.pathname) ||
-        resolve(process.cwd(), "./pkg.json");
+        resolve(process.cwd(), "./package.json");
     pkgJson = require(pkgPath);
     currentV = pkgJson.version || "1.2.3";
 
-    const v = await doAsk();
+    targetV = await doAsk();
 
-    if (isObject(options) && options.write) doWrite(v);
+    if (isObject(options) && options.write) doWrite();
 
-    return v;
+    return targetV;
 }
 
 export { increaseVersion };
