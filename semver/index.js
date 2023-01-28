@@ -108,7 +108,7 @@ const isObject = (val) => val !== null && typeof val === "object";
  * options 可选参数
  * @param { Boolean } options.write 是否更新package.json文件中的版本号，默认false，只返回更新后的版本号；
  * @param { String } options.pathname 指定package.json文件路径，默认寻找命令执行路径下的package.json
- * @returns
+ * @returns { String } version 升级后的版本号
  */
 async function increaseVersion(options = {}) {
     pkgPath =
