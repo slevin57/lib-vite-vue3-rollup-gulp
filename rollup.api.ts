@@ -26,7 +26,7 @@ try {
             outputOptions as OutputOptions
         );
         for (const chunkOrAsset of chunkOrAssetArr) {
-            console.log(`chunkOrAsset:`, chunkOrAsset);
+            // console.log(`chunkOrAsset:`, chunkOrAsset);
         }
 
         Promise.all(
