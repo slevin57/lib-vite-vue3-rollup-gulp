@@ -3,7 +3,7 @@
 > pnpm V7.14.1\
 > yarn 1.22.18
 
-# rollup通过配置文件和api两种方式打包vue3组件的mvp
+# 通过rollup的配置文件和api及vite三种方式打包vue3组件的mvp
 
 `packages`目录：专门存放组件，通过一个`index.ts`文件总导出。
 
